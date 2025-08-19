@@ -47,6 +47,11 @@
 - **Why it matters**: Provides satisfying direct manipulation interface
 - **Success criteria**: Words are correctly identified when selected in any valid direction
 
+### Hint System
+- **What it does**: Highlights the first letter of unfound words to help users locate them
+- **Why it matters**: Provides assistance when users get stuck, maintaining engagement
+- **Success criteria**: Hints are clearly visible and only show for words not yet found
+
 ### Progress Tracking
 - **What it does**: Shows which words have been found and provides completion feedback
 - **Why it matters**: Gives users clear goals and sense of progress

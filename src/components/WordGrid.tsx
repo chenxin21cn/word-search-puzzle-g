@@ -221,7 +221,7 @@ export function WordGrid({ puzzle, foundWords, onWordFound, showHints }: WordGri
     } else if (isSelected) {
       className += 'bg-accent/30 text-accent-foreground ';
     } else if (isHint) {
-      className += 'bg-accent/20 text-accent border-accent/40 animate-pulse ';
+      className += 'bg-accent/30 text-accent border-accent/50 animate-pulse shadow-md ring-2 ring-accent/30 ';
     } else {
       className += 'bg-card hover:bg-muted/50 text-foreground ';
     }
@@ -270,7 +270,7 @@ export function WordGrid({ puzzle, foundWords, onWordFound, showHints }: WordGri
         <div>Click and drag to select words horizontally or vertically</div>
         <div className="text-xs">Words can be forwards or backwards</div>
         {showHints && (
-          <div className="text-xs text-accent">💡 Hint: Glowing letters show the start of unfound words</div>
+          <div className="text-xs text-accent font-medium">💡 Hint: Pulsing letters show where unfound words begin</div>
         )}
       </div>
     </div>

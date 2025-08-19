@@ -91,6 +91,10 @@ export function WordSearchGame() {
   }, [setShowHints]);
 
   const validWords = useMemo(() => processWords(inputWords), [inputWords, processWords]);
+  
+  const unfoundWords = useMemo(() => {
+    return currentPuzzle ? currentPuzzle.words.filter(word => !foundWords.includes(word)) : [];
+  }, [currentPuzzle, foundWords]);
 
   return (
     <div className="space-y-6">
@@ -228,15 +232,20 @@ export function WordSearchGame() {
               </div>
             </Card>
             
-            <Button 
-              onClick={toggleHints} 
-              variant={showHints ? "default" : "outline"}
-              className="w-full"
-              size="lg"
+            <motion.div
+              animate={unfoundWords.length > 0 && !showHints ? { scale: [1, 1.02, 1] } : {}}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Lightbulb className="mr-2" />
-              {showHints ? 'Hide Hints' : 'Show Hints'}
-            </Button>
+              <Button 
+                onClick={toggleHints} 
+                variant={showHints ? "default" : "outline"}
+                className="w-full"
+                size="lg"
+              >
+                <Lightbulb className="mr-2" />
+                {showHints ? `Hide Hints (${unfoundWords.length} shown)` : `Show Hints (${unfoundWords.length} available)`}
+              </Button>
+            </motion.div>
             
             <Button 
               onClick={createNewPuzzle} 
