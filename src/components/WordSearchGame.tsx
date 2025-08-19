@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, RotateCcw, Sparkles, Palette, Lightbulb } from '@phosphor-icons/react';
+import { Plus, RotateCcw, Sparkles, Palette, Lightbulb, Clock } from '@phosphor-icons/react';
 import { WordGrid } from './WordGrid';
 import { generateWordSearch } from '../lib/wordSearchGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +28,8 @@ export function WordSearchGame() {
   const [foundWords, setFoundWords] = useKV<string[]>('found-words', []);
   const [showHints, setShowHints] = useKV<boolean>('show-hints', false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {
     'Animals': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
     'Colors': ['RED', 'BLUE', 'GREEN', 'PINK', 'BROWN'],
@@ -40,6 +42,21 @@ export function WordSearchGame() {
       setTimeout(() => setIsCompleted(true), 500);
     }
   }, [currentPuzzle, foundWords]);
+
+  // Timer logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (startTime && !isCompleted) {
+      interval = setInterval(() => {
+        setElapsedTime(Date.now() - startTime);
+      }, 100); // Update every 100ms for smooth display
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [startTime, isCompleted]);
 
   const processWords = useCallback((input: string): string[] => {
     if (!input.trim()) return [];
@@ -62,6 +79,9 @@ export function WordSearchGame() {
       setFoundWords([]);
       setIsCompleted(false);
       setInputWords('');
+      // Start the timer
+      setStartTime(Date.now());
+      setElapsedTime(0);
     }
   }, [inputWords, setCurrentPuzzle, setFoundWords]);
 
@@ -84,6 +104,9 @@ export function WordSearchGame() {
     setCurrentPuzzle(null);
     setFoundWords([]);
     setShowHints(false);
+    // Reset timer
+    setStartTime(null);
+    setElapsedTime(0);
   }, [setCurrentPuzzle, setFoundWords, setShowHints]);
 
   const toggleHints = useCallback(() => {
@@ -95,6 +118,13 @@ export function WordSearchGame() {
   const unfoundWords = useMemo(() => {
     return currentPuzzle ? currentPuzzle.words.filter(word => !foundWords.includes(word)) : [];
   }, [currentPuzzle, foundWords]);
+
+  const formatTime = useCallback((milliseconds: number): string => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -197,6 +227,14 @@ export function WordSearchGame() {
                 </div>
               </div>
               
+              {/* Timer Display */}
+              <div className="flex items-center justify-center gap-2 mb-4 p-2 bg-muted/30 rounded-md">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-mono text-foreground">
+                  {formatTime(elapsedTime)}
+                </span>
+              </div>
+              
               <div className="space-y-2">
                 <AnimatePresence>
                   {currentPuzzle.words.map((word) => {
@@ -272,6 +310,12 @@ export function WordSearchGame() {
             <p className="text-muted-foreground">
               You found all {currentPuzzle?.words.length} words! Great job!
             </p>
+            <div className="flex items-center justify-center gap-2 p-3 bg-muted/30 rounded-md">
+              <Clock className="w-5 h-5 text-muted-foreground" />
+              <span className="text-lg font-mono font-semibold text-foreground">
+                {formatTime(elapsedTime)}
+              </span>
+            </div>
             <Button onClick={createNewPuzzle} className="w-full" size="lg">
               Create New Puzzle
             </Button>
