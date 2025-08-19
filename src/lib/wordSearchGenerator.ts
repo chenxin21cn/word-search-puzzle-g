@@ -17,10 +17,6 @@ const DIRECTIONS = [
   [0, -1],  // horizontal left
   [1, 0],   // vertical down
   [-1, 0],  // vertical up
-  [1, 1],   // diagonal down-right
-  [-1, -1], // diagonal up-left
-  [1, -1],  // diagonal down-left
-  [-1, 1],  // diagonal up-right
 ];
 
 function getRandomInt(min: number, max: number): number {
@@ -89,7 +85,7 @@ export function generateWordSearch(words: string[]): WordSearchResult | null {
   if (words.length === 0) return null;
 
   const maxWordLength = Math.max(...words.map(w => w.length));
-  const gridSize = Math.max(15, Math.min(20, maxWordLength + 5));
+  const gridSize = Math.max(10, Math.min(15, maxWordLength + 3));
   
   // Initialize empty grid
   const grid: string[][] = Array(gridSize)
@@ -105,7 +101,7 @@ export function generateWordSearch(words: string[]): WordSearchResult | null {
   for (const word of sortedWords) {
     let placed = false;
     let attempts = 0;
-    const maxAttempts = 100;
+    const maxAttempts = 150; // Increased attempts for better placement
 
     while (!placed && attempts < maxAttempts) {
       const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];

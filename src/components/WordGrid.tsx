@@ -54,10 +54,10 @@ export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
       return [start];
     }
     
+    // Only allow horizontal and vertical directions (easier difficulty)
     const isValidDirection = (
-      rowDiff === 0 || 
-      colDiff === 0 || 
-      Math.abs(rowDiff) === Math.abs(colDiff)
+      rowDiff === 0 || // horizontal
+      colDiff === 0    // vertical
     );
     
     if (!isValidDirection) {
@@ -243,8 +243,9 @@ export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
         )}
       </motion.div>
       
-      <div className="text-center text-sm text-muted-foreground">
-        Click and drag to select words
+      <div className="text-center text-sm text-muted-foreground space-y-1">
+        <div>Click and drag to select words horizontally or vertically</div>
+        <div className="text-xs">Words can be forwards or backwards</div>
       </div>
     </div>
   );

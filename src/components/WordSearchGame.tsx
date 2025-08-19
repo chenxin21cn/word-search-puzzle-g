@@ -27,7 +27,12 @@ export function WordSearchGame() {
   const [currentPuzzle, setCurrentPuzzle] = useKV<WordSearchData | null>('current-puzzle', null);
   const [foundWords, setFoundWords] = useKV<string[]>('found-words', []);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {});
+  const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {
+    'Animals': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
+    'Colors': ['RED', 'BLUE', 'GREEN', 'PINK', 'BROWN'],
+    'Food': ['PIZZA', 'APPLE', 'BREAD', 'CAKE', 'SOUP'],
+    'Family': ['MOM', 'DAD', 'BABY', 'UNCLE', 'AUNT']
+  });
 
   useEffect(() => {
     if (currentPuzzle && foundWords.length === currentPuzzle.words.length && foundWords.length > 0) {
@@ -41,9 +46,9 @@ export function WordSearchGame() {
     return input
       .split(',')
       .map(word => word.trim().toUpperCase().replace(/[^A-Z]/g, ''))
-      .filter(word => word.length > 0 && word.length <= 15)
+      .filter(word => word.length > 0 && word.length <= 10) // Reduced max length
       .filter((word, index, arr) => arr.indexOf(word) === index)
-      .slice(0, 12);
+      .slice(0, 8); // Reduced max words from 12 to 8
   }, []);
 
   const generatePuzzle = useCallback(() => {
@@ -94,13 +99,13 @@ export function WordSearchGame() {
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">Create Your Puzzle</h2>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Enter words separated by commas. Words will be hidden horizontally, vertically, and diagonally.
+                  Enter words separated by commas. Words will be hidden horizontally and vertically (max 8 words, 10 letters each).
                 </p>
               </div>
               
               <div className="space-y-3">
                 <Input
-                  placeholder="Enter words separated by commas (e.g., PUZZLE, SEARCH, HIDDEN, WORDS)"
+                  placeholder="Enter words separated by commas (e.g., CAT, DOG, BIRD, FISH)"
                   value={inputWords}
                   onChange={(e) => setInputWords(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && generatePuzzle()}
