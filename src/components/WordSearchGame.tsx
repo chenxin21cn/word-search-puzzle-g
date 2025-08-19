@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, RotateCcw, Sparkles, Palette } from '@phosphor-icons/react';
+import { Plus, RotateCcw, Sparkles, Palette, Lightbulb } from '@phosphor-icons/react';
 import { WordGrid } from './WordGrid';
 import { generateWordSearch } from '../lib/wordSearchGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +26,7 @@ export function WordSearchGame() {
   const [inputWords, setInputWords] = useState('');
   const [currentPuzzle, setCurrentPuzzle] = useKV<WordSearchData | null>('current-puzzle', null);
   const [foundWords, setFoundWords] = useKV<string[]>('found-words', []);
+  const [showHints, setShowHints] = useKV<boolean>('show-hints', false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {
     'Animals': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
@@ -82,7 +83,12 @@ export function WordSearchGame() {
     setIsCompleted(false);
     setCurrentPuzzle(null);
     setFoundWords([]);
-  }, [setCurrentPuzzle, setFoundWords]);
+    setShowHints(false);
+  }, [setCurrentPuzzle, setFoundWords, setShowHints]);
+
+  const toggleHints = useCallback(() => {
+    setShowHints(current => !current);
+  }, [setShowHints]);
 
   const validWords = useMemo(() => processWords(inputWords), [inputWords, processWords]);
 
@@ -173,6 +179,7 @@ export function WordSearchGame() {
                 puzzle={currentPuzzle}
                 foundWords={foundWords}
                 onWordFound={handleWordFound}
+                showHints={showHints}
               />
             </Card>
           </div>
@@ -220,6 +227,16 @@ export function WordSearchGame() {
                 </AnimatePresence>
               </div>
             </Card>
+            
+            <Button 
+              onClick={toggleHints} 
+              variant={showHints ? "default" : "outline"}
+              className="w-full"
+              size="lg"
+            >
+              <Lightbulb className="mr-2" />
+              {showHints ? 'Hide Hints' : 'Show Hints'}
+            </Button>
             
             <Button 
               onClick={createNewPuzzle} 

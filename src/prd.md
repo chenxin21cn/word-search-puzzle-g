@@ -52,6 +52,11 @@
 - **Why it matters**: Gives users clear goals and sense of progress
 - **Success criteria**: Found words are visually marked and completion is celebrated
 
+### Hint System
+- **What it does**: Highlights the first letter of each unfound word when hints are enabled
+- **Why it matters**: Provides assistance for users who get stuck, making the game more accessible
+- **Success criteria**: Hints clearly indicate word starting positions without making the game too easy
+
 ### Preset Themes
 - **What it does**: Provides pre-made word lists for quick puzzle generation
 - **Why it matters**: Helps users get started without having to think of words

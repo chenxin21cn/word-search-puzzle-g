@@ -11,9 +11,10 @@ interface WordGridProps {
   puzzle: WordSearchData;
   foundWords: string[];
   onWordFound: (word: string) => void;
+  showHints: boolean;
 }
 
-export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
+export function WordGrid({ puzzle, foundWords, onWordFound, showHints }: WordGridProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [startPos, setStartPos] = useState<Position | null>(null);
   const [currentPos, setCurrentPos] = useState<Position | null>(null);
@@ -187,11 +188,31 @@ export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
     return positions;
   }, [foundWords, puzzle.positions, getPathBetweenPositions]);
 
+  const getHintPositions = useCallback(() => {
+    if (!showHints) return new Set<string>();
+    
+    const hintPositions = new Set<string>();
+    const unfoundWords = puzzle.words.filter(word => !foundWords.includes(word));
+    
+    unfoundWords.forEach(word => {
+      puzzle.positions.forEach(pos => {
+        if (pos.word === word) {
+          // Add the first letter position as a hint
+          hintPositions.add(`${pos.startRow}-${pos.startCol}`);
+        }
+      });
+    });
+    
+    return hintPositions;
+  }, [showHints, puzzle.words, puzzle.positions, foundWords]);
+
   const foundPositions = getFoundWordsPositions();
+  const hintPositions = getHintPositions();
 
   const getCellClassName = useCallback((row: number, col: number) => {
     const isSelected = selectedPath.some(pos => pos.row === row && pos.col === col);
     const isFound = foundPositions.has(`${row}-${col}`);
+    const isHint = hintPositions.has(`${row}-${col}`);
     
     let className = 'aspect-square flex items-center justify-center text-lg font-bold cursor-pointer select-none transition-all duration-200 border border-border/20 ';
     
@@ -199,12 +220,14 @@ export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
       className += 'bg-primary/20 text-primary ';
     } else if (isSelected) {
       className += 'bg-accent/30 text-accent-foreground ';
+    } else if (isHint) {
+      className += 'bg-accent/20 text-accent border-accent/40 animate-pulse ';
     } else {
       className += 'bg-card hover:bg-muted/50 text-foreground ';
     }
     
     return className;
-  }, [selectedPath, foundPositions]);
+  }, [selectedPath, foundPositions, hintPositions]);
 
   return (
     <div className="space-y-4">
@@ -246,6 +269,9 @@ export function WordGrid({ puzzle, foundWords, onWordFound }: WordGridProps) {
       <div className="text-center text-sm text-muted-foreground space-y-1">
         <div>Click and drag to select words horizontally or vertically</div>
         <div className="text-xs">Words can be forwards or backwards</div>
+        {showHints && (
+          <div className="text-xs text-accent">💡 Hint: Glowing letters show the start of unfound words</div>
+        )}
       </div>
     </div>
   );
