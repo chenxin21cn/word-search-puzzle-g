@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, RotateCcw, Sparkles, Palette, Lightbulb } from '@phosphor-icons/react';
 import { WordGrid } from './WordGrid';
+import { Timer } from './Timer';
 import { generateWordSearch } from '../lib/wordSearchGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,6 +29,8 @@ export function WordSearchGame() {
   const [foundWords, setFoundWords] = useKV<string[]>('found-words', []);
   const [showHints, setShowHints] = useKV<boolean>('show-hints', false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerResetKey, setTimerResetKey] = useState(0);
   const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {
     'Animals': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
     'Colors': ['RED', 'BLUE', 'GREEN', 'PINK', 'BROWN'],
@@ -37,6 +40,7 @@ export function WordSearchGame() {
 
   useEffect(() => {
     if (currentPuzzle && foundWords.length === currentPuzzle.words.length && foundWords.length > 0) {
+      setIsTimerRunning(false);
       setTimeout(() => setIsCompleted(true), 500);
     }
   }, [currentPuzzle, foundWords]);
@@ -62,6 +66,8 @@ export function WordSearchGame() {
       setFoundWords([]);
       setIsCompleted(false);
       setInputWords('');
+      setIsTimerRunning(true);
+      setTimerResetKey(prev => prev + 1);
     }
   }, [inputWords, setCurrentPuzzle, setFoundWords]);
 
@@ -84,6 +90,8 @@ export function WordSearchGame() {
     setCurrentPuzzle(null);
     setFoundWords([]);
     setShowHints(false);
+    setIsTimerRunning(false);
+    setTimerResetKey(prev => prev + 1);
   }, [setCurrentPuzzle, setFoundWords, setShowHints]);
 
   const toggleHints = useCallback(() => {
@@ -257,6 +265,23 @@ export function WordSearchGame() {
               New Puzzle
             </Button>
           </div>
+        </motion.div>
+      )}
+
+      {/* Timer at the bottom of the page */}
+      {currentPuzzle && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex justify-center"
+        >
+          <Card className="px-6 py-3">
+            <Timer 
+              isRunning={isTimerRunning} 
+              onReset={timerResetKey}
+            />
+          </Card>
         </motion.div>
       )}
 
