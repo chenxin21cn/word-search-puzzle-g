@@ -17,6 +17,10 @@ const DIRECTIONS = [
   [0, -1],  // horizontal left
   [1, 0],   // vertical down
   [-1, 0],  // vertical up
+  [1, 1],   // diagonal down-right
+  [1, -1],  // diagonal down-left
+  [-1, 1],  // diagonal up-right
+  [-1, -1], // diagonal up-left
 ];
 
 function getRandomInt(min: number, max: number): number {
