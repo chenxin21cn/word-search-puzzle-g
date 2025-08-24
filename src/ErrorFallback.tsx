@@ -13,14 +13,14 @@ export const ErrorFallback = ({ error, resetErrorBoundary }) => {
       <div className="w-full max-w-md">
         <Alert variant="destructive" className="mb-6">
           <AlertTriangleIcon />
-          <AlertTitle>This spark has encountered a runtime error</AlertTitle>
+          <AlertTitle>此应用程序遇到运行时错误</AlertTitle>
           <AlertDescription>
-            Something unexpected happened while running the application. The error details are shown below. Contact the spark author and let them know about this issue.
+            运行应用程序时发生意外错误。错误详细信息如下所示。请联系应用程序作者并告知此问题。
           </AlertDescription>
         </Alert>
         
         <div className="bg-card border rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-sm text-muted-foreground mb-2">Error Details:</h3>
+          <h3 className="font-semibold text-sm text-muted-foreground mb-2">错误详细信息：</h3>
           <pre className="text-xs text-destructive bg-muted/50 p-3 rounded border overflow-auto max-h-32">
             {error.message}
           </pre>
@@ -32,7 +32,7 @@ export const ErrorFallback = ({ error, resetErrorBoundary }) => {
           variant="outline"
         >
           <RefreshCwIcon />
-          Try Again
+          重试
         </Button>
       </div>
     </div>
