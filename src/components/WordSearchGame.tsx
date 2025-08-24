@@ -32,10 +32,10 @@ export function WordSearchGame() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerResetKey, setTimerResetKey] = useState(0);
   const [wordThemes] = useKV<Record<string, string[]>>('word-themes', {
-    'Animals': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
-    'Colors': ['RED', 'BLUE', 'GREEN', 'PINK', 'BROWN'],
-    'Food': ['PIZZA', 'APPLE', 'BREAD', 'CAKE', 'SOUP'],
-    'Family': ['MOM', 'DAD', 'BABY', 'UNCLE', 'AUNT']
+    '动物': ['CAT', 'DOG', 'BIRD', 'FISH', 'LION'],
+    '颜色': ['RED', 'BLUE', 'GREEN', 'PINK', 'BROWN'],
+    '食物': ['PIZZA', 'APPLE', 'BREAD', 'CAKE', 'SOUP'],
+    '家庭': ['MOM', 'DAD', 'BABY', 'UNCLE', 'AUNT']
   });
 
   useEffect(() => {
@@ -115,15 +115,15 @@ export function WordSearchGame() {
           <Card className="p-6">
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-semibold text-foreground mb-2">Create Your Puzzle</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-2">创建您的拼图</h2>
                 <p className="text-muted-foreground text-sm mb-4">
-                  Enter words separated by commas. Words will be hidden horizontally and vertically (max 8 words, 10 letters each).
+                  输入用逗号分隔的单词。单词将水平和垂直隐藏（最多8个单词，每个10个字母）。
                 </p>
               </div>
               
               <div className="space-y-3">
                 <Input
-                  placeholder="Enter words separated by commas (e.g., CAT, DOG, BIRD, FISH)"
+                  placeholder="输入用逗号分隔的单词（例如：CAT、DOG、BIRD、FISH）"
                   value={inputWords}
                   onChange={(e) => setInputWords(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && generatePuzzle()}
@@ -132,7 +132,7 @@ export function WordSearchGame() {
 
                 {Object.keys(wordThemes).length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Or choose a theme:</p>
+                    <p className="text-sm text-muted-foreground">或选择一个主题：</p>
                     <div className="flex flex-wrap gap-2">
                       {Object.entries(wordThemes).map(([theme, words]) => (
                         <Button
@@ -153,7 +153,7 @@ export function WordSearchGame() {
                 {validWords.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      Words to include ({validWords.length}):
+                      要包含的单词 ({validWords.length})：
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {validWords.map((word, index) => (
@@ -172,7 +172,7 @@ export function WordSearchGame() {
                   size="lg"
                 >
                   <Plus className="mr-2" />
-                  Generate Puzzle
+                  生成拼图
                 </Button>
               </div>
             </div>
@@ -199,7 +199,7 @@ export function WordSearchGame() {
           <div className="space-y-4">
             <Card className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-foreground">Find These Words</h3>
+                <h3 className="font-semibold text-foreground">找到这些单词</h3>
                 <div className="text-sm text-muted-foreground">
                   {foundWords.length} / {currentPuzzle.words.length}
                 </div>
@@ -251,7 +251,7 @@ export function WordSearchGame() {
                 size="lg"
               >
                 <Lightbulb className="mr-2" />
-                {showHints ? `Hide Hints (${unfoundWords.length} shown)` : `Show Hints (${unfoundWords.length} available)`}
+                {showHints ? `隐藏提示 (${unfoundWords.length} 已显示)` : `显示提示 (${unfoundWords.length} 可用)`}
               </Button>
             </motion.div>
             
@@ -262,7 +262,7 @@ export function WordSearchGame() {
               size="lg"
             >
               <RotateCcw className="mr-2" />
-              New Puzzle
+              新拼图
             </Button>
           </div>
         </motion.div>
@@ -290,15 +290,15 @@ export function WordSearchGame() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-center justify-center">
               <Sparkles className="text-accent" />
-              Congratulations!
+              恭喜！
             </DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">
-              You found all {currentPuzzle?.words.length} words! Great job!
+              您找到了所有 {currentPuzzle?.words.length} 个单词！做得好！
             </p>
             <Button onClick={createNewPuzzle} className="w-full" size="lg">
-              Create New Puzzle
+              创建新拼图
             </Button>
           </div>
         </DialogContent>
