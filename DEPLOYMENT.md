@@ -1,5 +1,16 @@
 # Azure Deployment Instructions
 
+## Application Overview
+
+This is a React TypeScript word search puzzle game that allows users to create custom word puzzles in Chinese. Users can:
+- Enter custom words or select from predefined themes (动物, 颜色, 食物, 家庭)
+- Generate interactive word search grids
+- Find hidden words in horizontal, vertical, and diagonal patterns
+- Track progress with a timer and completion status
+
+![Word Search Game - Initial Screen](https://github.com/user-attachments/assets/02310305-a523-409f-8013-ba3807a8a0c3)
+![Word Search Game - Puzzle View](https://github.com/user-attachments/assets/515d708c-ab17-4a44-ba03-f89ac489f1d8)
+
 ## Prerequisites
 
 1. Azure account with an active subscription
