@@ -12,6 +12,63 @@ export interface WordSearchResult {
   positions: WordPosition[];
 }
 
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+export interface DifficultyConfig {
+  gridSize: { min: number; max: number };
+  maxWords: number;
+  maxWordLength: number;
+  allowedDirections: number[][];
+  placementAttempts: number;
+}
+
+export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
+  easy: {
+    gridSize: { min: 8, max: 12 },
+    maxWords: 6,
+    maxWordLength: 8,
+    allowedDirections: [
+      [0, 1],   // horizontal right
+      [0, -1],  // horizontal left
+      [1, 0],   // vertical down
+      [-1, 0],  // vertical up
+    ],
+    placementAttempts: 100,
+  },
+  medium: {
+    gridSize: { min: 10, max: 15 },
+    maxWords: 8,
+    maxWordLength: 10,
+    allowedDirections: [
+      [0, 1],   // horizontal right
+      [0, -1],  // horizontal left
+      [1, 0],   // vertical down
+      [-1, 0],  // vertical up
+      [1, 1],   // diagonal down-right
+      [1, -1],  // diagonal down-left
+      [-1, 1],  // diagonal up-right
+      [-1, -1], // diagonal up-left
+    ],
+    placementAttempts: 150,
+  },
+  hard: {
+    gridSize: { min: 12, max: 18 },
+    maxWords: 12,
+    maxWordLength: 15,
+    allowedDirections: [
+      [0, 1],   // horizontal right
+      [0, -1],  // horizontal left
+      [1, 0],   // vertical down
+      [-1, 0],  // vertical up
+      [1, 1],   // diagonal down-right
+      [1, -1],  // diagonal down-left
+      [-1, 1],  // diagonal up-right
+      [-1, -1], // diagonal up-left
+    ],
+    placementAttempts: 200,
+  },
+};
+
 const DIRECTIONS = [
   [0, 1],   // horizontal right
   [0, -1],  // horizontal left
@@ -85,11 +142,12 @@ function placeWord(
   };
 }
 
-export function generateWordSearch(words: string[]): WordSearchResult | null {
+export function generateWordSearch(words: string[], difficulty: DifficultyLevel = 'medium'): WordSearchResult | null {
   if (words.length === 0) return null;
 
+  const config = DIFFICULTY_CONFIGS[difficulty];
   const maxWordLength = Math.max(...words.map(w => w.length));
-  const gridSize = Math.max(10, Math.min(15, maxWordLength + 3));
+  const gridSize = Math.max(config.gridSize.min, Math.min(config.gridSize.max, maxWordLength + 3));
   
   // Initialize empty grid
   const grid: string[][] = Array(gridSize)
@@ -105,10 +163,10 @@ export function generateWordSearch(words: string[]): WordSearchResult | null {
   for (const word of sortedWords) {
     let placed = false;
     let attempts = 0;
-    const maxAttempts = 150; // Increased attempts for better placement
+    const maxAttempts = config.placementAttempts;
 
     while (!placed && attempts < maxAttempts) {
-      const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
+      const direction = config.allowedDirections[Math.floor(Math.random() * config.allowedDirections.length)];
       const row = getRandomInt(0, gridSize - 1);
       const col = getRandomInt(0, gridSize - 1);
 
