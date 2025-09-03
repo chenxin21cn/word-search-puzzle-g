@@ -4,11 +4,12 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, RotateCcw, Sparkles, Palette, Lightbulb } from '@phosphor-icons/react';
 import { WordGrid } from './WordGrid';
 import { Timer } from './Timer';
-import { generateWordSearch } from '../lib/wordSearchGenerator';
+import { generateWordSearch, DifficultyLevel, DIFFICULTY_CONFIGS } from '../lib/wordSearchGenerator';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface WordSearchData {
@@ -28,6 +29,7 @@ export function WordSearchGame() {
   const [currentPuzzle, setCurrentPuzzle] = useKV<WordSearchData | null>('current-puzzle', null);
   const [foundWords, setFoundWords] = useKV<string[]>('found-words', []);
   const [showHints, setShowHints] = useKV<boolean>('show-hints', false);
+  const [difficulty, setDifficulty] = useKV<DifficultyLevel>('difficulty', 'medium');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerResetKey, setTimerResetKey] = useState(0);
@@ -48,19 +50,21 @@ export function WordSearchGame() {
   const processWords = useCallback((input: string): string[] => {
     if (!input.trim()) return [];
     
+    const config = DIFFICULTY_CONFIGS[difficulty];
+    
     return input
       .split(',')
       .map(word => word.trim().toUpperCase().replace(/[^A-Z]/g, ''))
-      .filter(word => word.length > 0 && word.length <= 10) // Reduced max length
+      .filter(word => word.length > 0 && word.length <= config.maxWordLength)
       .filter((word, index, arr) => arr.indexOf(word) === index)
-      .slice(0, 8); // Reduced max words from 12 to 8
-  }, []);
+      .slice(0, config.maxWords);
+  }, [difficulty]);
 
   const generatePuzzle = useCallback(() => {
     const words = processWords(inputWords);
     if (words.length === 0) return;
 
-    const puzzle = generateWordSearch(words);
+    const puzzle = generateWordSearch(words, difficulty);
     if (puzzle) {
       setCurrentPuzzle(puzzle);
       setFoundWords([]);
@@ -69,7 +73,7 @@ export function WordSearchGame() {
       setIsTimerRunning(true);
       setTimerResetKey(prev => prev + 1);
     }
-  }, [inputWords, setCurrentPuzzle, setFoundWords]);
+  }, [inputWords, difficulty, processWords, setCurrentPuzzle, setFoundWords]);
 
   const loadTheme = useCallback((theme: string) => {
     const themeWords = wordThemes[theme];
@@ -117,11 +121,24 @@ export function WordSearchGame() {
               <div>
                 <h2 className="text-xl font-semibold text-foreground mb-2">创建您的拼图</h2>
                 <p className="text-muted-foreground text-sm mb-4">
-                  输入用逗号分隔的单词。单词将水平和垂直隐藏（最多8个单词，每个10个字母）。
+                  输入用逗号分隔的单词。根据难度级别，单词将以不同方向隐藏（最多{DIFFICULTY_CONFIGS[difficulty].maxWords}个单词，每个{DIFFICULTY_CONFIGS[difficulty].maxWordLength}个字母）。
                 </p>
               </div>
               
               <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">难度级别</label>
+                  <Select value={difficulty} onValueChange={(value: DifficultyLevel) => setDifficulty(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="选择难度级别" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">简单 - 水平垂直方向，{DIFFICULTY_CONFIGS.easy.maxWords}个单词</SelectItem>
+                      <SelectItem value="medium">中等 - 包含斜线方向，{DIFFICULTY_CONFIGS.medium.maxWords}个单词</SelectItem>
+                      <SelectItem value="hard">困难 - 所有方向，{DIFFICULTY_CONFIGS.hard.maxWords}个单词</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Input
                   placeholder="输入用逗号分隔的单词（例如：CAT、DOG、BIRD、FISH）"
                   value={inputWords}
