@@ -22,4 +22,12 @@ export default defineConfig({
       '@': resolve(projectRoot, 'src')
     }
   },
+  publicDir: 'public',
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(projectRoot, 'index.html')
+      }
+    }
+  }
 });
